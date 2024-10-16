@@ -1,46 +1,41 @@
 pipeline {
-    agent any 
+
+    agent {label 'any'}
+
     environment {
-        // Once you sign up for Docker Hub, use that user_id here
-        registry = "manjuntha1963/mypythonapp"
-        // Update your credentials ID after creating credentials for connecting to Docker Hub
-        registryCredential = 'dockerhub-pwd'
-        dockerImage = ''
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
-    
+
     stages {
-        stage('Cloning Git') {
+        
+        stage('Git Clone') {
             steps {
-                // Add your Bitbucket credentials here for private repo access
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']],  
-                url: 'https://github.com/manjuntha1963/docker.git']]])       
+                git 'https://github.com/manjuntha1963/docker'
             }
         }
-    
-        // Building Docker images
-        stage('Building image') {
+
+        stage('Build') {
             steps {
-                script {
-                    dockerImage = docker.build registry
-                }
+                sh 'docker build -t manjuntha1963/nodeapp_test:latest .'
             }
         }
-    
-        // Uploading Docker images into Docker Hub
-        stage('Upload Image') {
-            steps {    
-                script {
-                    docker.withRegistry('', registryCredential) {
-                        dockerImage.push()
-                    }
-                }
+
+        stage('Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+
+        stage('Push') {
+            steps {
+                sh 'docker push manjuntha1963/nodeapp_test:latest'
             }
         }
     }
-    
+
     post {
         always {
-            cleanWs() // Clean up workspace after the build
+            sh 'docker logout'
         }
     }
 }
