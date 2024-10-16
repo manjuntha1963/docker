@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "your-dockerhub-username/sample-docker-app:latest" // Replace with your Docker Hub username
+        DOCKER_IMAGE = "manjuntha1963/sample-docker-app:latest" // Replace with your Docker Hub username
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')       // Replace with your Jenkins credentials ID
     }
 
@@ -10,7 +10,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the GitHub repository
-                git branch: 'main', url: 'https://github.com/manjuntha1963/docker.git' // Replace with your GitHub repo
+                git branch: 'master', url: 'https://github.com/manjuntha1963/docker.git' // Replace with your GitHub repo
             }
         }
 
