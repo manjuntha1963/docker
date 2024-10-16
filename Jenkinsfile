@@ -10,18 +10,19 @@ pipeline {
             }
         }
         
-        stage('Build and Push Docker Image') {
-            environment {
-                DOCKER_IMAGE = "manjuntha1963/ultimate-cicd:${BUILD_NUMBER}" // Unique image tag using build number
-                REGISTRY_CREDENTIALS = credentials('docker-cred') // Use the credentials ID you set in Jenkins
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t manjuntha1963/devops-integration .'
+                }
             }
-            steps {
-                script {
-                    // Corrected the syntax for the build command
-                    sh "docker build -t ${DOCKER_IMAGE} ." // Use double quotes for variable interpolation
-                    def dockerImage = docker.image("${DOCKER_IMAGE}")
-                    docker.withRegistry('https://index.docker.io/v1/', REGISTRY_CREDENTIALS) {
-                        dockerImage.push() // Push the image to Docker Hub
+        }
+        stage('Push image to Hub'){
+            steps{
+                script{
+                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
+                   sh 'docker login -u manjuntha1963 -p ${dockerhubpwd}'
+                   sh 'docker push manjuntha1963/devops-integration'
                     }
                 }
             }
