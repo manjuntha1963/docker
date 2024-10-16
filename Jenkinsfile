@@ -10,7 +10,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the GitHub repository
-                git branch: 'main', url: 'https://github.com/your-github-username/sample-docker-app.git' // Replace with your GitHub repo
+                git branch: 'main', url: 'https://github.com/manjuntha1963/docker.git' // Replace with your GitHub repo
             }
         }
 
