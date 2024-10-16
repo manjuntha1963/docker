@@ -1,14 +1,15 @@
 pipeline {
-    agent any {
-    }
+    agent any // This specifies that the pipeline can run on any available agent.
+    
     stages {
         stage('Checkout') {
             steps {
-                sh 'echo passed'
+                sh 'echo passed' // Print "passed" to the console
                 // Uncomment to enable git checkout
                 // git branch: 'master', url: 'https://github.com/manjuntha1963/docker.git'
             }
         }
+        
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_IMAGE = "manjuntha1963/ultimate-cicd:${BUILD_NUMBER}" // Unique image tag using build number
@@ -26,6 +27,7 @@ pipeline {
             }
         }
     }
+    
     post {
         always {
             cleanWs() // Clean up workspace after the build
