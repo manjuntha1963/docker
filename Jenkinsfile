@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'manjuntha1963/maven-abhishek-docker-agent:v1'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket to access the host's Docker daemon
-        }
+    agent any {
     }
     stages {
         stage('Checkout') {
