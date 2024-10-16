@@ -1,28 +1,37 @@
 pipeline {
-    agent any // This specifies that the pipeline can run on any available agent.
+    agent any 
+    environment {
+        // Once you sign up for Docker Hub, use that user_id here
+        registry = "manjuntha1963/mypythonapp"
+        // Update your credentials ID after creating credentials for connecting to Docker Hub
+        registryCredential = 'dockerhub-pwd'
+        dockerImage = ''
+    }
     
     stages {
-        stage('Checkout') {
+        stage('Cloning Git') {
             steps {
-                sh 'echo passed' // Print "passed" to the console
-                // Uncomment to enable git checkout
-                // git branch: 'master', url: 'https://github.com/manjuntha1963/docker.git'
+                // Add your Bitbucket credentials here for private repo access
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']],  
+                url: 'https://github.com/manjuntha1963/docker.git']]])       
             }
         }
-        
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t manjuntha1963/devops-integration .'
+    
+        // Building Docker images
+        stage('Building image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry
                 }
             }
         }
-        stage('Push image to Hub'){
-            steps{
-                script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u manjuntha1963 -p ${dockerhubpwd}'
-                   sh 'docker push manjuntha1963/devops-integration'
+    
+        // Uploading Docker images into Docker Hub
+        stage('Upload Image') {
+            steps {    
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
                     }
                 }
             }
