@@ -1,14 +1,19 @@
-# Sample Dockerfile for a simple Python app
-FROM python:3.9-slim
+# Dockerfile for Docker-in-Docker (DinD)
 
-# Set the working directory in the container
-WORKDIR /app
+# Use the official Docker image with Docker already installed
+FROM docker:20.10.24-dind
 
-# Copy current directory contents into the container at /app
-COPY . /app
+# Install necessary tools like curl, git, etc. (optional)
+RUN apk update && apk add --no-cache \
+    bash \
+    curl \
+    git
 
-# Install any dependencies
-RUN pip install --no-cache-dir -r requirements.txt || echo "No requirements.txt file, skipping"
+# Set environment variables for Docker-in-Docker
+ENV DOCKER_TLS_CERTDIR=/certs
 
-# Run a simple Python script
-CMD ["python", "-c", "print('Hello from Docker!')"]
+# Expose the Docker daemon port
+EXPOSE 2375
+
+# Entry point for Docker daemon
+CMD ["dockerd"]
